@@ -1,7 +1,7 @@
 { lib, pkgs, ... }:
 
 {
-  imports = [ ./packages.nix ];
+  imports = [ ./packages.nix ./niri.nix ];
 
   nixpkgs.config.allowUnfree = true;
 
@@ -26,7 +26,6 @@
   };
 
   programs = {
-    niri.enable = true;
     foot.enable = true;
     vscode.enable = true;
     nix-ld.enable = true;
@@ -109,22 +108,6 @@
           { LastFMRichPresence.apiKey = ""; }
         ];
       };
-  };
-
-  xdg.portal = {
-    enable = true;
-    xdgOpenUsePortal = true;
-    extraPortals = with pkgs; [
-      xdg-desktop-portal-gtk
-      xdg-desktop-portal-gnome
-    ];
-    config.niri = {
-      default = [
-        "gnome"
-        "gtk"
-      ];
-      "org.freedesktop.impl.portal.FileChooser" = [ "gtk" ];
-    };
   };
 
   fonts.packages =

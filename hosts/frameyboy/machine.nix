@@ -1,6 +1,21 @@
 { pkgs, ... }:
 
 {
+  local.niri = {
+    focusFollowsMouseMaxScrollAmount = "0%";
+    focusRingWidth = 2;
+    outputs = [
+      {
+        _args = [ "eDP-1" ];
+        scale = 1.75;
+      }
+      {
+        _args = [ "LG Electronics LG ULTRAGEAR+ 503NTBK7F333" ];
+        mode = "3840x2160@240";
+      }
+    ];
+  };
+
   networking = {
     hostName = "frameyboy";
     networkmanager.enable = false;

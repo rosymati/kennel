@@ -43,6 +43,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    niri-nix = {
+      url = "git+https://codeberg.org/BANanaD3V/niri-nix";
+    };
+
     # obsbot-camera-control = {
     #   url = "path:/home/matilde/projects/obsbot-camera-control";
     #   inputs.nixpkgs.follows = "nixpkgs";
@@ -70,6 +74,7 @@
     in
     {
       nixosConfigurations.mati-nixing = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs; };
         modules = [
           overlaysModule
           # desktopObsbotOverlay
@@ -78,6 +83,7 @@
       };
 
       nixosConfigurations.frameyboy = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs; };
         modules = [
           overlaysModule
           nixos-hardware.nixosModules.framework-amd-ai-300-series

@@ -15,6 +15,24 @@
 
   hardware.amdgpu.initrd.enable = true;
 
+  local.niri = {
+    warpMouseToFocus = true;
+    outputs = [
+      {
+        _args = [ "LG Electronics LG ULTRAGEAR+ 501NTLE7W704" ];
+        mode = "3840x2160@240";
+        scale = 1.5;
+      }
+      {
+        _args = [ "Dell Inc. DELL AW2523HF 1NCHC34" ];
+        mode = "1920x1080@360";
+        scale = 1;
+        transform = "270";
+        layout."default-column-width"._children = [ { proportion = 1.0; } ];
+      }
+    ];
+  };
+
   boot = {
     kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest-lto-zen4;
     kernelParams = [
