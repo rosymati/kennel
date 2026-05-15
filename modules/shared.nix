@@ -1,59 +1,10 @@
-{
-  lib,
-  pkgs,
-  ...
-}:
+{ lib, pkgs, ... }:
 
 {
-  imports = [
-    ./hardware-configuration.nix
-    ./services.nix
-  ];
+  imports = [ ./packages.nix ];
 
   nixpkgs.config.allowUnfree = true;
-  hardware.amdgpu.initrd.enable = true;
 
-  boot = {
-    kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest-lto-zen4;
-    kernelParams = [
-      "amdgpu.ppfeaturemask=0xffffffff"
-    ];
-
-    loader = {
-      efi.canTouchEfiVariables = true;
-      systemd-boot.enable = false; # Disable systemd-boot explicitly
-
-      limine = {
-        enable = true;
-        enableEditor = true;
-        maxGenerations = 5;
-
-        style = {
-          wallpapers = [ ];
-          interface.resolution = "1920x1080"; # 3840x2160 is not supported in uefi;
-        };
-
-        extraEntries = ''
-          /Windows
-              protocol: efi
-              path: boot():/EFI/Microsoft/Boot/bootmgfw.efi
-        '';
-        extraConfig = ''
-          remember_last_entry: yes
-        '';
-      };
-    };
-  };
-
-  networking = {
-    hostName = "mati-nixing";
-    networkmanager.enable = false;
-    wireless.iwd = {
-      enable = true;
-      settings.General.EnableNetworkConfiguration = true;
-    };
-    useNetworkd = true;
-  };
   time.timeZone = "Europe/Rome";
 
   i18n.defaultLocale = "en_US.UTF-8";
@@ -81,19 +32,6 @@
     nix-ld.enable = true;
     gamemode.enable = true;
 
-    obs-studio = {
-      enable = true;
-
-      plugins = with pkgs.obs-studio-plugins; [
-        wlrobs
-        obs-backgroundremoval
-        obs-vkcapture
-        obs-pipewire-audio-capture
-        obs-vaapi
-        obs-gstreamer
-      ];
-    };
-
     gnupg.agent = {
       enable = true;
       pinentryPackage = pkgs.pinentry-qt;
@@ -104,14 +42,8 @@
       nix-direnv.enable = true;
     };
 
-    gamescope = {
-      enable = true;
-      capSysNice = true;
-    };
-
     steam = {
       enable = true;
-
       extraCompatPackages = with pkgs; [
         proton-ge-bin
       ];
@@ -212,12 +144,7 @@
 
   environment = {
     localBinInPath = true;
-    systemPackages = (import ./packages.nix pkgs);
-    # Workaround for nixpkgs bug: foot module sets source = lib.mkIf false ...
-    # which leaves the option defined but with no value when serverAutostart = false
     etc."xdg/autostart/foot-server.desktop" = lib.mkOverride 0 { enable = false; };
-
-    # Makes stuff work under wayland apparently
     sessionVariables.NIXOS_OZONE_WL = "1";
   };
 
@@ -236,23 +163,4 @@
       "helix.cachix.org-1:ejp9KQpR1FBI2onstMQ34yogDm4OgU2ru6lIwPvuCVs="
     ];
   };
-
-  # This option defines the first version of NixOS you have installed on this particular machine,
-  # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
-  #
-  # Most users should NEVER change this value after the initial install, for any reason,
-  # even if you've upgraded your system to a new NixOS release.
-  #
-  # This value does NOT affect the Nixpkgs version your packages and OS are pulled from,
-  # so changing it will NOT upgrade your system - see https://nixos.org/manual/nixos/stable/#sec-upgrading for how
-  # to actually do that.
-  #
-  # This value being lower than the current NixOS release does NOT mean your system is
-  # out of date, out of support, or vulnerable.
-  #
-  # Do NOT change this value unless you have manually inspected all the changes it would make to your configuration,
-  # and migrated your data accordingly.
-  #
-  # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
-  system.stateVersion = "25.11"; # Did you read the comment?
 }

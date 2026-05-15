@@ -24,7 +24,7 @@
     };
 
     opencode = {
-      url = "github:anomalyco/opencode/v1.14.37";
+      url = "github:anomalyco/opencode/v1.15.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -42,28 +42,46 @@
       url = "github:puppymati/bunbun";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # obsbot-camera-control = {
+    #   url = "path:/home/matilde/projects/obsbot-camera-control";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
+
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
   };
+
   outputs =
-    inputs@{ self, nixpkgs, ... }:
+    inputs@{
+      self,
+      nixpkgs,
+      nixos-hardware,
+      ...
+    }:
+    let
+      overlaysModule = import ./modules/overlays.nix inputs;
+      # desktopObsbotOverlay = {
+      #   nixpkgs.overlays = [
+      #     (final: prev: {
+      #       obsbot-camera-control = inputs.obsbot-camera-control.packages.${prev.system}.obsbot-camera-control;
+      #     })
+      #   ];
+      # };
+    in
     {
       nixosConfigurations.mati-nixing = nixpkgs.lib.nixosSystem {
-        modules = with inputs; [
-          {
-            nixpkgs.overlays = [
-              nix-cachyos-kernel.overlays.pinned
-              opencode.overlays.default
-              helix.overlays.default
+        modules = [
+          overlaysModule
+          # desktopObsbotOverlay
+          ./hosts/mati-nixing/default.nix
+        ];
+      };
 
-              (final: prev: {
-                zen-browser = inputs.zen-browser.packages.${prev.system}.default;
-              })
-
-              bunbun.overlays.default
-            ];
-
-            imports = [ inputs.nixcord.nixosModules.nixcord ];
-          }
-          ./configuration.nix
+      nixosConfigurations.frameyboy = nixpkgs.lib.nixosSystem {
+        modules = [
+          overlaysModule
+          nixos-hardware.nixosModules.framework-amd-ai-300-series
+          ./hosts/frameyboy/default.nix
         ];
       };
     };

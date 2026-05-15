@@ -39,16 +39,16 @@
     ];
   };
 
-  fileSystems."/mnt/side-piece" = {
-    device = "/dev/disk/by-uuid/0632C70432C6F827";
-    fsType = "ntfs-3g";
-    options = [
-      "uid=1000"
-      "gid=1000"
-      "umask=022"
-      "defaults"
-    ];
-  };
+  # fileSystems."/mnt/side-piece" = {
+  #   device = "/dev/disk/by-uuid/0632C70432C6F827";
+  #   fsType = "ntfs-3g";
+  #   options = [
+  #     "uid=1000"
+  #     "gid=1000"
+  #     "umask=022"
+  #     "defaults"
+  #   ];
+  # };
 
   swapDevices = [
     { device = "/dev/disk/by-uuid/30188701-ca0a-49ff-9a51-7bf9a572614a"; }

@@ -1,21 +1,10 @@
-{
-  pkgs,
-  ...
-}:
+{ pkgs, ... }:
 
 {
   services.displayManager.ly.enable = true;
   services.gnome.gnome-keyring.enable = true;
   services.udisks2.enable = true;
   services.tailscale.enable = true;
-  services.lact.enable = true;
-  services.ollama = {
-    enable = true;
-    package = pkgs.ollama-rocm;
-  };
-  # services.open-webui.enable = true;
-  # services.open-webui.port = 49783;
-
   services.resolved.enable = true;
   services.mullvad-vpn = {
     enable = true;
@@ -47,16 +36,14 @@
     };
   };
 
-  systemd.user.services.swaybg = {
-    description = "swaybg wallpaper";
-    wantedBy = [ "niri.service" ];
-    after = [ "niri.service" ];
+  systemd.user.services.udiskie = {
+    description = "Automount removable media";
+    wantedBy = [ "graphical-session.target" ];
+    partOf = [ "graphical-session.target" ];
     serviceConfig = {
-      Type = "simple";
-      ExecStart = "${pkgs.swaybg}/bin/swaybg -o DP-2 -i %h/Pictures/wall-rotated.png -o '*' -i %h/Pictures/wall.png";
+      ExecStart = "${pkgs.udiskie}/bin/udiskie --automount --no-file-manager";
       Restart = "on-failure";
-      RestartSec = 1;
-      TimeoutStopSec = 10;
+      RestartSec = 3;
     };
   };
 
@@ -70,17 +57,6 @@
       Restart = "on-failure";
       RestartSec = 1;
       TimeoutStopSec = 10;
-    };
-  };
-
-  systemd.user.services.udiskie = {
-    description = "Automount removable media";
-    wantedBy = [ "graphical-session.target" ];
-    partOf = [ "graphical-session.target" ];
-    serviceConfig = {
-      ExecStart = "${pkgs.udiskie}/bin/udiskie --automount --no-file-manager";
-      Restart = "on-failure";
-      RestartSec = 3;
     };
   };
 
