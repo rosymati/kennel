@@ -52,6 +52,11 @@
     #   inputs.nixpkgs.follows = "nixpkgs";
     # };
 
+    hjem = {
+      url = "github:feel-co/hjem";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
   };
 
@@ -64,6 +69,7 @@
     }:
     let
       overlaysModule = import ./modules/overlays.nix inputs;
+
       # desktopObsbotOverlay = {
       #   nixpkgs.overlays = [
       #     (final: prev: {
@@ -71,24 +77,29 @@
       #     })
       #   ];
       # };
+
+      commonModules = [
+        overlaysModule
+        # desktopObsbotOverlay
+        inputs.hjem.nixosModules.default
+      ];
     in
     {
       nixosConfigurations.mati-nixing = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
         modules = [
-          overlaysModule
-          # desktopObsbotOverlay
           ./hosts/mati-nixing/default.nix
-        ];
+        ]
+        ++ commonModules;
       };
 
       nixosConfigurations.frameyboy = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
         modules = [
-          overlaysModule
           nixos-hardware.nixosModules.framework-amd-ai-300-series
           ./hosts/frameyboy/default.nix
-        ];
+        ]
+        ++ commonModules;
       };
     };
 }

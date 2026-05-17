@@ -28,6 +28,30 @@
     ];
   };
 
+  hjem.users = {
+    matilde = {
+      enable = true;
+      directory = "/home/matilde";
+      user = "matilde";
+
+      xdg.config.files = {
+        "git/config" = {
+          generator = lib.generators.toGitINI;
+
+          value = {
+            user = {
+              name = "Matilde Morrone";
+              email = "contact@matilde.pet";
+              signingkey = "8BCD8313AED05D32";
+            };
+            commit.gpgsign = true;
+            init.defaultBranch = "main";
+          };
+        };
+      };
+    };
+  };
+
   programs = {
     foot.enable = true;
     vscode.enable = true;
