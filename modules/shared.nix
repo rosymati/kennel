@@ -1,7 +1,10 @@
 { lib, pkgs, ... }:
 
 {
-  imports = [ ./packages.nix ./niri.nix ];
+  imports = [
+    ./packages.nix
+    ./niri.nix
+  ];
 
   nixpkgs.config.allowUnfree = true;
 
