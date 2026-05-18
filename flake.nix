@@ -47,6 +47,12 @@
       url = "git+https://codeberg.org/BANanaD3V/niri-nix";
     };
 
+    ironbar = {
+      url = "github:JakeStanger/ironbar/v0.19.0";
+      inputs.flake-compat.follows = "flake-compat";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # obsbot-camera-control = {
     #   url = "path:/home/matilde/projects/obsbot-camera-control";
     #   inputs.nixpkgs.follows = "nixpkgs";

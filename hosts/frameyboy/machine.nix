@@ -1,6 +1,8 @@
 { pkgs, ... }:
 
 {
+  local.ironbar.extraEndWidgets = [ { type = "battery"; } ];
+
   local.niri = {
     focusFollowsMouseMaxScrollAmount = "0%";
     focusRingWidth = 2;

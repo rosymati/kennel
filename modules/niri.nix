@@ -347,6 +347,6 @@ in
 
   config = {
     programs.niri.enable = true;
-    environment.variables.NIRI_CONFIG = "${builtConfig}";
+    hjem.users.matilde.xdg.config.files."niri/config.kdl".source = builtConfig;
   };
 }

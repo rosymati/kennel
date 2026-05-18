@@ -5,6 +5,7 @@ inputs: {
     inputs.helix.overlays.default
     (final: prev: {
       zen-browser = inputs.zen-browser.packages.${prev.system}.default;
+      ironbar = inputs.ironbar.packages.${prev.system}.default;
     })
     inputs.bunbun.overlays.default
   ];

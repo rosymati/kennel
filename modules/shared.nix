@@ -4,6 +4,7 @@
   imports = [
     ./packages.nix
     ./niri.nix
+    ./ironbar.nix
   ];
 
   nixpkgs.config.allowUnfree = true;
@@ -167,12 +168,12 @@
     extra-substituters = [
       "https://helix.cachix.org"
       "https://attic.xuyh0120.win/lantian" # cachyos hydra
-      "https://cache.garnix.io" # cachyos garnix
+      "https://cache.garnix.io"
     ];
     extra-trusted-public-keys = [
       "helix.cachix.org-1:ejp9KQpR1FBI2onstMQ34yogDm4OgU2ru6lIwPvuCVs="
       "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc=" # cachyos hydra
-      "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g=" # cachyos garnix
+      "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
     ];
   };
 }
