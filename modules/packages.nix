@@ -13,7 +13,6 @@
     nixfmt
     git
     nautilus
-    claude-code
     zellij
     mako
     teams-for-linux
@@ -37,7 +36,8 @@
     theclicker
     prismlauncher
     jdk21_headless
-    # opencode
+    llm-agents.claude-code
+    llm-agents.opencode
     pnpm
     zen-browser
     deno

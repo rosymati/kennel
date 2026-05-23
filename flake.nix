@@ -23,11 +23,6 @@
       inputs.flake-parts.follows = "flake-parts";
     };
 
-    opencode = {
-      url = "github:anomalyco/opencode/v1.15.10";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     zen-browser = {
       url = "github:youwen5/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -35,11 +30,6 @@
 
     helix = {
       url = "github:helix-editor/helix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    bunbun = {
-      url = "github:puppymati/bunbun";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -53,14 +43,15 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # obsbot-camera-control = {
-    #   url = "path:/home/matilde/projects/obsbot-camera-control";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
-
     hjem = {
       url = "github:feel-co/hjem";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    llm-agents = {
+      url = "github:numtide/llm-agents.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-parts.follows = "flake-parts";
     };
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
@@ -76,17 +67,8 @@
     let
       overlaysModule = import ./modules/overlays.nix inputs;
 
-      # desktopObsbotOverlay = {
-      #   nixpkgs.overlays = [
-      #     (final: prev: {
-      #       obsbot-camera-control = inputs.obsbot-camera-control.packages.${prev.system}.obsbot-camera-control;
-      #     })
-      #   ];
-      # };
-
       commonModules = [
         overlaysModule
-        # desktopObsbotOverlay
         inputs.hjem.nixosModules.default
       ];
     in
