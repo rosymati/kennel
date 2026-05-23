@@ -76,19 +76,6 @@
     capSysNice = true;
   };
 
-  programs.obs-studio = {
-    enable = true;
-
-    plugins = with pkgs.obs-studio-plugins; [
-      wlrobs
-      obs-backgroundremoval
-      obs-vkcapture
-      obs-pipewire-audio-capture
-      obs-vaapi
-      obs-gstreamer
-    ];
-  };
-
   systemd.user.services.swaybg = {
     description = "swaybg wallpaper";
     wantedBy = [ "niri.service" ];

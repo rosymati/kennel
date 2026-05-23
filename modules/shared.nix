@@ -98,6 +98,19 @@
       enableZshIntegration = true;
     };
 
+    obs-studio = {
+      enable = true;
+
+      plugins = with pkgs.obs-studio-plugins; [
+        wlrobs
+        obs-backgroundremoval
+        obs-vkcapture
+        obs-pipewire-audio-capture
+        obs-vaapi
+        obs-gstreamer
+      ];
+    };
+
     nixcord =
       let
         enablePlugins =
