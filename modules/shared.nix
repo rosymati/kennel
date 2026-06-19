@@ -20,7 +20,6 @@
     isNormalUser = true;
     extraGroups = [
       "wheel"
-      "docker"
       "gamemode"
     ];
     shell = pkgs.zsh;
@@ -164,6 +163,13 @@
 
   virtualisation.docker = {
     enable = true;
+
+    rootless = {
+      enable = true;
+      setSocketVariable = true;
+    };
+
+    storageDriver = "btrfs";
   };
 
   environment = {
