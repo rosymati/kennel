@@ -38,6 +38,7 @@
     jdk21_headless
     llm-agents.claude-code
     llm-agents.opencode
+    llm-agents.codex
     pnpm
     zen-browser
     deno
@@ -46,7 +47,7 @@
     poetry
     dbeaver-bin
     postgresql
-    yt-dlp
+    yt-dlp_git
     android-tools
     unzip
     qdirstat
@@ -76,8 +77,10 @@
     xh
     jq
     tor-browser
+    snapshot
     geeqie
     firefox-devedition
+    weston-demos
     (pkgs.symlinkJoin {
       name = "sweethome3d";
       paths = [ pkgs.sweethome3d.application ];
