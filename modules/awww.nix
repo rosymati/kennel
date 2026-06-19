@@ -27,6 +27,8 @@ let
       # wait until the daemon socket is ready
       until awww query >/dev/null 2>&1; do sleep 0.2; done
 
+      export AWWW_TRANSITION_STEP=${toString cfg.transitionStep}
+
       ${
         if cfg.order == "random" then
           ''
@@ -75,6 +77,14 @@ in
       ];
       default = "random";
       description = "Whether to cycle wallpapers randomly or in filename order.";
+    };
+    transitionStep = lib.mkOption {
+      type = lib.types.ints.between 1 255;
+      default = 7;
+      description = ''
+        awww transition step (1-255) for wallpaper changes. Higher is faster;
+        awww's own default is 2. Passed as --transition-step.
+      '';
     };
   };
 
