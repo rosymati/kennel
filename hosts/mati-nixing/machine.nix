@@ -34,7 +34,7 @@
   };
 
   boot = {
-    kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest-lto-zen4;
+    kernelPackages = pkgs.linuxPackages_cachyos-lto-znver4;
     kernelParams = [
       "amdgpu.ppfeaturemask=0xffffffff"
     ];

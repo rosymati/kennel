@@ -31,7 +31,7 @@
   hardware.amdgpu.initrd.enable = true;
 
   boot = {
-    kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest-lto-zen4;
+    kernelPackages = pkgs.linuxPackages_cachyos-lto-znver4;
 
     loader = {
       efi.canTouchEfiVariables = true;

@@ -10,10 +10,9 @@
       url = "github:hercules-ci/flake-parts";
     };
 
-    nix-cachyos-kernel = {
-      url = "github:xddxdd/nix-cachyos-kernel/release";
-      inputs.flake-compat.follows = "flake-compat";
-      inputs.flake-parts.follows = "flake-parts";
+    chaotic = {
+      url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     nixcord = {
@@ -35,6 +34,7 @@
 
     niri-nix = {
       url = "git+https://codeberg.org/BANanaD3V/niri-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     ironbar = {
@@ -54,7 +54,15 @@
       inputs.flake-parts.follows = "flake-parts";
     };
 
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    weston-demos = {
+      url = "github:rosymati/weston-demos-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nixos-hardware = {
+      url = "github:NixOS/nixos-hardware/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -70,6 +78,7 @@
       commonModules = [
         overlaysModule
         inputs.hjem.nixosModules.default
+        inputs.chaotic.nixosModules.default
       ];
     in
     {
