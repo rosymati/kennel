@@ -47,18 +47,5 @@
 
   services.power-profiles-daemon.enable = true;
 
-  systemd.user.services.swaybg = {
-    description = "swaybg wallpaper";
-    wantedBy = [ "niri.service" ];
-    after = [ "niri.service" ];
-    serviceConfig = {
-      Type = "simple";
-      ExecStart = "${pkgs.swaybg}/bin/swaybg -o '*' -i %h/Pictures/wall.png";
-      Restart = "on-failure";
-      RestartSec = 1;
-      TimeoutStopSec = 10;
-    };
-  };
-
   system.stateVersion = "25.11";
 }

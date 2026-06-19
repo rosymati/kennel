@@ -61,7 +61,7 @@
     pandoc
     inkscape
     helix
-    swaybg
+    awww
     veracrypt
     libreoffice-fresh
     hunspell

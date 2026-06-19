@@ -5,6 +5,7 @@
     ./packages.nix
     ./niri.nix
     ./ironbar.nix
+    ./awww.nix
   ];
 
   nixpkgs.config.allowUnfree = true;
