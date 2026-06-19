@@ -146,6 +146,12 @@ let
         ];
       };
 
+      "Mod+Shift+W" = {
+        _props.repeat = false;
+        _props."hotkey-overlay-title" = "Change Wallpaper: awww-next";
+        spawn._args = [ "awww-next" ];
+      };
+
       "Mod+O" = {
         _props.repeat = false;
         "toggle-overview" = { };

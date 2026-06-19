@@ -8,8 +8,8 @@
 let
   cfg = config.local.awww;
 
-  rotate = pkgs.writeShellApplication {
-    name = "awww-rotate";
+  next = pkgs.writeShellApplication {
+    name = "awww-next";
     runtimeInputs = [
       pkgs.awww
       pkgs.findutils
@@ -20,7 +20,7 @@ let
       mapfile -t imgs < <(find -L "$dir" -type f \
         \( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.webp' -o -iname '*.gif' \) | sort)
       if [ ''${#imgs[@]} -eq 0 ]; then
-        echo "awww-rotate: no wallpapers in $dir" >&2
+        echo "awww-next: no wallpapers in $dir" >&2
         exit 1
       fi
 
@@ -30,21 +30,29 @@ let
       ${
         if cfg.order == "random" then
           ''
-            while true; do
-              awww img "''${imgs[RANDOM % ''${#imgs[@]}]}"
-              sleep ${cfg.interval}
-            done
+            awww img "''${imgs[RANDOM % ''${#imgs[@]}]}"
           ''
         else
           ''
+            state="''${XDG_RUNTIME_DIR:-/tmp}/awww-next.idx"
             i=0
-            while true; do
-              awww img "''${imgs[i]}"
-              i=$(( (i + 1) % ''${#imgs[@]} ))
-              sleep ${cfg.interval}
-            done
+            [ -f "$state" ] && i=$(cat "$state")
+            i=$(( i % ''${#imgs[@]} ))
+            awww img "''${imgs[i]}"
+            echo $(( (i + 1) % ''${#imgs[@]} )) > "$state"
           ''
       }
+    '';
+  };
+
+  rotate = pkgs.writeShellApplication {
+    name = "awww-rotate";
+    runtimeInputs = [ next ];
+    text = ''
+      while true; do
+        awww-next || true
+        sleep ${cfg.interval}
+      done
     '';
   };
 in
@@ -71,6 +79,9 @@ in
   };
 
   config = {
+    # `awww-next` available as a manual trigger (command / keybind).
+    environment.systemPackages = [ next ];
+
     systemd.user.services.awww-daemon = {
       description = "awww wallpaper daemon";
       wantedBy = [ "niri.service" ];
