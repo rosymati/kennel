@@ -71,6 +71,11 @@
     package = pkgs.ollama-rocm;
   };
 
+  services.open-webui = {
+    enable = true;
+    port = 4543;
+  };
+
   programs.gamescope = {
     enable = true;
     capSysNice = true;
