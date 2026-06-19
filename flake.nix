@@ -73,12 +73,23 @@
       ...
     }:
     let
-      overlaysModule = import ./modules/overlays.nix inputs;
+      overlays = with inputs; {
+        nixpkgs.overlays = [
+          helix.overlays.default
+          llm-agents.overlays.default
+          weston-demos.overlays.default
+          (final: prev: {
+            zen-browser = zen-browser.packages.${prev.system}.default;
+            ironbar = ironbar.packages.${prev.system}.default;
+          })
+        ];
+      };
 
-      commonModules = [
-        overlaysModule
-        inputs.hjem.nixosModules.default
-        inputs.chaotic.nixosModules.default
+      commonModules = with inputs; [
+        overlays
+        hjem.nixosModules.default
+        chaotic.nixosModules.default
+        nixcord.nixosModules.nixcord
       ];
     in
     {
