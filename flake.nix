@@ -82,10 +82,10 @@
       ];
     in
     {
-      nixosConfigurations.mati-nixing = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.ahnashawn = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
         modules = [
-          ./hosts/mati-nixing/default.nix
+          ./hosts/ahnashawn/default.nix
         ]
         ++ commonModules;
       };

@@ -4,7 +4,7 @@
   imports = [ ./packages.nix ];
 
   networking = {
-    hostName = "mati-nixing";
+    hostName = "ahnashawn";
     networkmanager.enable = false;
     wireless.iwd = {
       enable = true;
