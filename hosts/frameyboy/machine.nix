@@ -30,6 +30,11 @@
 
   hardware.amdgpu.initrd.enable = true;
 
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = false;
+  };
+
   boot = {
     kernelPackages = pkgs.linuxPackages_cachyos-lto-znver4;
 
