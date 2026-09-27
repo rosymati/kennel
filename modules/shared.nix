@@ -39,7 +39,7 @@
           value = {
             user = {
               name = "Matilde Morrone";
-              email = "contact@matilde.pet";
+              email = "contact@rosymati.com";
               signingkey = "8BCD8313AED05D32";
             };
             commit.gpgsign = true;
