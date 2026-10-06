@@ -60,5 +60,6 @@
     enableAllFirmware = true;
     amdgpu.initrd.enable = true;
     amdgpu.overdrive.enable = false;
+    keyboard.zsa.enable = true;
   };
 }
