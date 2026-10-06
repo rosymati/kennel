@@ -6,13 +6,13 @@
   services.udisks2.enable = true;
   services.tailscale.enable = true;
   services.resolved.enable = true;
-  services.mullvad-vpn = {
-    enable = true;
-    package = pkgs.mullvad-vpn;
-  };
-
   security.pam.services.login.enableGnomeKeyring = true;
   security.polkit.enable = true;
+
+  services.mullvad-vpn = {
+    enable = true;
+    gui.enable = true;
+  };
 
   services.pipewire = {
     enable = true;
