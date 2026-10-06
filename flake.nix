@@ -2,12 +2,20 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    flake-compat = {
-      url = "github:NixOS/flake-compat";
+    # Garbage needed for other inputs
+    flake-compat.url = "github:NixOS/flake-compat";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    home-manager = {
+      url = "github:nix-community/home-manager/release-26.05";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    flake-parts = {
-      url = "github:hercules-ci/flake-parts";
+    nix-darwin = {
+      url = "github:nix-darwin/nix-darwin/nix-darwin-26.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     chaotic = {
@@ -18,8 +26,9 @@
     nixcord = {
       url = "github:FlameFlag/nixcord";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-compat.follows = "flake-compat";
-      inputs.flake-parts.follows = "flake-parts";
+      inputs.treefmt-nix.follows = "treefmt-nix";
+      inputs.home-manager.follows = "home-manager";
+      inputs.nix-darwin.follows = "nix-darwin";
     };
 
     zen-browser = {
@@ -37,12 +46,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    ironbar = {
-      url = "github:JakeStanger/ironbar/v0.19.0";
-      inputs.flake-compat.follows = "flake-compat";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     hjem = {
       url = "github:feel-co/hjem";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -52,6 +55,7 @@
       url = "github:numtide/llm-agents.nix";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-parts.follows = "flake-parts";
+      inputs.treefmt-nix.follows = "treefmt-nix";
     };
 
     weston-demos = {
@@ -61,6 +65,11 @@
 
     nixos-hardware = {
       url = "github:NixOS/nixos-hardware/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    obsbot-camera-control = {
+      url = "git+file:///home/matilde/projects/obsbot-camera-control";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -82,16 +91,6 @@
 
           (final: prev: {
             zen-browser = zen-browser.packages.${prev.stdenv.hostPlatform.system}.default;
-            ironbar = ironbar.packages.${prev.stdenv.hostPlatform.system}.default;
-
-            linux-firmware = prev.linux-firmware.overrideAttrs (old: {
-              version = "unstable-2026-07-06";
-              src = prev.fetchgit {
-                url = "https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git";
-                rev = "2c35b1ed46f661baaf14b08cebb9201ca802f939";
-                hash = "sha256-omvuU48DpQ+KCxTU4JWj9ivzgFwrykuCBMCGGpa6kKM=";
-              };
-            });
           })
         ];
       };
@@ -109,6 +108,7 @@
       nixosConfigurations.ahnashawn = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
         modules = [
+          inputs.obsbot-camera-control.nixosModules.default
           ./hosts/ahnashawn/default.nix
         ]
         ++ commonModules;

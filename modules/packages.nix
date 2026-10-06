@@ -83,7 +83,7 @@
     screen
     pandoc
     inkscape
-    helix
+    # helix
     awww
     eigenwallet
     veracrypt
