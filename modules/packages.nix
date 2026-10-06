@@ -87,7 +87,7 @@
     awww
     eigenwallet
     veracrypt
-    libreoffice-fresh
+    libreoffice-stable
     hunspell
     hunspellDicts.en_US
     hunspellDicts.it_IT
@@ -109,6 +109,11 @@
     tree
     ntfs3g
     ntfsprogs
+    gh
+    olympus
+    keymapp
+    chromium
+    # genymotion
     (pkgs.symlinkJoin {
       name = "sweethome3d";
       paths = [ pkgs.sweethome3d.application ];
