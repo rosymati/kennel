@@ -74,6 +74,10 @@
     };
   };
 
+  swapDevices = [
+    { device = "/dev/disk/by-uuid/6ecbb696-1a2c-4fb5-9d45-ef5e8379e594"; }
+  ];
+
   services.power-profiles-daemon.enable = true;
 
   system.stateVersion = "25.11";
