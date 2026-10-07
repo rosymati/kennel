@@ -1,6 +1,9 @@
-{ pkgs, ... }:
+{ inputs, ... }:
 
 {
+  # Also enables power-profiles-daemon and amdgpu initrd.
+  imports = [ inputs.nixos-hardware.nixosModules.framework-amd-ai-300-series ];
+
   local.ironbar.extraEndWidgets = [ { type = "battery"; } ];
 
   local.niri = {
@@ -18,67 +21,10 @@
     ];
   };
 
-  networking = {
-    hostName = "frameyboy";
-    networkmanager.enable = false;
-    wireless.iwd = {
-      enable = true;
-      settings.General.EnableNetworkConfiguration = true;
-    };
-    useNetworkd = true;
-  };
-
-  hardware.amdgpu.initrd.enable = true;
-
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = false;
   };
-
-  boot = {
-    kernelPackages = pkgs.linuxPackages_cachyos-lto-znver4;
-
-    blacklistedKernelModules = [ "ntfs3" ];
-
-    tmp.cleanOnBoot = true;
-
-    zswap = {
-      enable = true;
-      compressor = "zstd";
-      zpool = "zsmalloc";
-      maxPoolPercent = 20;
-    };
-
-    loader = {
-      efi.canTouchEfiVariables = true;
-      systemd-boot.enable = false;
-
-      limine = {
-        enable = true;
-        enableEditor = true;
-        maxGenerations = 5;
-
-        additionalFiles = {
-          "memtest86/memtest.efi" = pkgs.memtest86plus.efi;
-        };
-
-        style = {
-          wallpapers = [ ];
-          # interface.resolution = "1920x1080";
-        };
-
-        extraConfig = ''
-          remember_last_entry: yes
-        '';
-      };
-    };
-  };
-
-  swapDevices = [
-    { device = "/dev/disk/by-uuid/6ecbb696-1a2c-4fb5-9d45-ef5e8379e594"; }
-  ];
-
-  services.power-profiles-daemon.enable = true;
 
   system.stateVersion = "25.11";
 }

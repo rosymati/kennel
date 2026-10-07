@@ -38,13 +38,9 @@
     ];
   };
 
-  swapDevices = [ ];
+  swapDevices = [
+    { device = "/dev/disk/by-uuid/6ecbb696-1a2c-4fb5-9d45-ef5e8379e594"; }
+  ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-  hardware = {
-    cpu.amd.updateMicrocode = true;
-    enableAllFirmware = true;
-    amdgpu.initrd.enable = true;
-    keyboard.zsa.enable = true;
-  };
 }

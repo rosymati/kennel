@@ -78,7 +78,6 @@
     inputs@{
       self,
       nixpkgs,
-      nixos-hardware,
       ...
     }:
     let
@@ -101,26 +100,30 @@
         chaotic.nixosModules.default
         nixcord.nixosModules.nixcord
       ];
+
+      # Every directory under ./hosts is a host: it needs a
+      # hardware-configuration.nix and a machine.nix. Host-only flake modules
+      # (nixos-hardware, etc.) are imported from that host's machine.nix.
+      mkHost =
+        name:
+        nixpkgs.lib.nixosSystem {
+          specialArgs = { inherit inputs; };
+          modules = [
+            ./modules/shared.nix
+            ./hosts/${name}/hardware-configuration.nix
+            ./hosts/${name}/machine.nix
+            { networking.hostName = name; }
+          ]
+          ++ commonModules;
+        };
+
+      hosts = builtins.attrNames (
+        nixpkgs.lib.filterAttrs (_: type: type == "directory") (builtins.readDir ./hosts)
+      );
     in
     {
       devShells = import ./modules/devshell.nix { inherit nixpkgs; };
 
-      nixosConfigurations.ahnashawn = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs; };
-        modules = [
-          inputs.obsbot-camera-control.nixosModules.default
-          ./hosts/ahnashawn/default.nix
-        ]
-        ++ commonModules;
-      };
-
-      nixosConfigurations.frameyboy = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs; };
-        modules = [
-          nixos-hardware.nixosModules.framework-amd-ai-300-series
-          ./hosts/frameyboy/default.nix
-        ]
-        ++ commonModules;
-      };
+      nixosConfigurations = nixpkgs.lib.genAttrs hosts mkHost;
     };
 }

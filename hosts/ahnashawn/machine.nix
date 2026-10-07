@@ -1,17 +1,15 @@
-{ pkgs, ... }:
+{
+  inputs,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
-  imports = [ ./packages.nix ];
-
-  networking = {
-    hostName = "ahnashawn";
-    networkmanager.enable = false;
-    wireless.iwd = {
-      enable = true;
-      settings.General.EnableNetworkConfiguration = true;
-    };
-    useNetworkd = true;
-  };
+  imports = [
+    inputs.obsbot-camera-control.nixosModules.default
+    ./packages.nix
+  ];
 
   local.niri = {
     warpMouseToFocus = true;
@@ -48,52 +46,14 @@
     ];
   };
 
-  boot = {
-    kernelPackages = pkgs.linuxPackages_cachyos-lto-znver4;
+  boot.loader.limine = {
+    style.interface.resolution = "1920x1080";
 
-    blacklistedKernelModules = [ "ntfs3" ];
-
-    tmp.cleanOnBoot = true;
-
-    zswap = {
-      enable = true;
-      compressor = "zstd";
-      zpool = "zsmalloc";
-      maxPoolPercent = 20;
-    };
-
-    loader = {
-      efi.canTouchEfiVariables = true;
-      systemd-boot.enable = false;
-
-      limine = {
-        enable = true;
-        enableEditor = true;
-        maxGenerations = 5;
-
-        additionalFiles = {
-          "memtest86/memtest.efi" = pkgs.memtest86plus.efi;
-        };
-
-        style = {
-          wallpapers = [ ];
-          interface.resolution = "1920x1080";
-        };
-
-        extraEntries = ''
-          /Windows
-              protocol: efi
-              path: boot():/EFI/Microsoft/Boot/bootmgfw.efi
-
-          /Memtest86+
-              protocol: efi
-              path: boot():/limine/memtest86/memtest.efi
-        '';
-        extraConfig = ''
-          remember_last_entry: yes
-        '';
-      };
-    };
+    extraEntries = lib.mkBefore ''
+      /Windows
+          protocol: efi
+          path: boot():/EFI/Microsoft/Boot/bootmgfw.efi
+    '';
   };
 
   services.lact.enable = false;
@@ -108,8 +68,6 @@
   };
 
   programs = {
-    chromium.enable = true;
-
     gamescope = {
       enable = true;
       capSysNice = false;
