@@ -114,6 +114,7 @@
     olympus
     keymapp
     chromium
+    ripgrep
     (pkgs.symlinkJoin {
       name = "sweethome3d";
       paths = [ pkgs.sweethome3d.application ];
