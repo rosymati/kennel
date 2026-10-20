@@ -1,5 +1,4 @@
 {
-  inputs,
   lib,
   pkgs,
   ...
@@ -7,7 +6,6 @@
 
 {
   imports = [
-    inputs.obsbot-camera-control.nixosModules.default
     ./packages.nix
   ];
 
@@ -56,29 +54,14 @@
     '';
   };
 
-  services.lact.enable = false;
   services.ollama = {
     enable = true;
     package = pkgs.ollama-rocm;
   };
 
-  services.open-webui = {
-    enable = false;
-    port = 4543;
-  };
+  services.fwupd.enable = true;
 
-  programs = {
-    gamescope = {
-      enable = true;
-      capSysNice = false;
-    };
-
-    obsbot-camera-control = {
-      enable = true;
-      # Loads v4l2loopback with the options the app expects (/dev/video42)
-      virtualCamera.enable = false;
-    };
-  };
+  programs.gamescope.enable = true;
 
   system.stateVersion = "25.11";
 }
