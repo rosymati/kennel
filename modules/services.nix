@@ -6,6 +6,7 @@
   services.udisks2.enable = true;
   services.tailscale.enable = true;
   services.resolved.enable = true;
+  services.usbmuxd.enable = true;
   security.pam.services.login.enableGnomeKeyring = true;
   security.polkit.enable = true;
 
