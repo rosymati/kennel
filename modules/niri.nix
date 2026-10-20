@@ -25,50 +25,20 @@ let
     // lib.optionalAttrs cfg.warpMouseToFocus {
       "warp-mouse-to-focus" = { };
     }
-    // (
-      if cfg.focusFollowsMouseMaxScrollAmount != null then
-        {
-          "focus-follows-mouse" = {
-            _props."max-scroll-amount" = cfg.focusFollowsMouseMaxScrollAmount;
-          };
-        }
-      else
-        {
-          "focus-follows-mouse" = { };
-        }
-    );
+    // {
+      "focus-follows-mouse" = lib.optionalAttrs (cfg.focusFollowsMouseMaxScrollAmount != null) {
+        _props."max-scroll-amount" = cfg.focusFollowsMouseMaxScrollAmount;
+      };
+    };
 
     output = cfg.outputs;
 
     layout = {
       gaps = 4;
-    }
-    // lib.optionalAttrs (cfg.focusRingWidth != 4) {
-      # 4 is niri's built-in default; only emit the block when overriding it
-      "focus-ring" = {
-        width = cfg.focusRingWidth;
-      };
+      "focus-ring".width = cfg.focusRingWidth;
     };
 
     "prefer-no-csd" = { };
-
-    "window-rule" = [
-      {
-        match = {
-          _props."app-id"._raw = ''r#"^org\.wezfurlong\.wezterm$"#'';
-        };
-        "default-column-width" = { };
-      }
-      {
-        match = {
-          _props = {
-            "app-id"._raw = ''r#"firefox$"#'';
-            title = "^Picture-in-Picture$";
-          };
-        };
-        "open-floating" = true;
-      }
-    ];
 
     binds = {
       "Mod+Shift+Slash"."show-hotkey-overlay" = { };
@@ -84,13 +54,6 @@ let
       "Super+Alt+L" = {
         _props."hotkey-overlay-title" = "Lock the Screen: swaylock";
         spawn._args = [ "swaylock" ];
-      };
-      "Super+Alt+S" = {
-        _props = {
-          "allow-when-locked" = true;
-          "hotkey-overlay-title" = null;
-        };
-        "spawn-sh"._args = [ "pkill orca || exec orca" ];
       };
 
       "XF86AudioRaiseVolume" = {
@@ -287,32 +250,16 @@ let
       "Mod+Shift+P"."power-off-monitors" = { };
     }
     // lib.listToAttrs (
-      lib.genList (
-        i:
+      lib.concatMap (
+        n:
         let
-          n = i + 1;
+          ws = toString n;
         in
-        {
-          name = "Mod+${toString n}";
-          value = {
-            "focus-workspace"._args = [ n ];
-          };
-        }
-      ) 9
-    )
-    // lib.listToAttrs (
-      lib.genList (
-        i:
-        let
-          n = i + 1;
-        in
-        {
-          name = "Mod+Ctrl+${toString n}";
-          value = {
-            "move-column-to-workspace"._args = [ n ];
-          };
-        }
-      ) 9
+        [
+          (lib.nameValuePair "Mod+${ws}" { "focus-workspace"._args = [ n ]; })
+          (lib.nameValuePair "Mod+Ctrl+${ws}" { "move-column-to-workspace"._args = [ n ]; })
+        ]
+      ) (lib.range 1 9)
     );
 
   };
@@ -321,8 +268,6 @@ let
 
 in
 {
-  imports = [ inputs.niri-nix.nixosModules.default ];
-
   options.local.niri = {
     outputs = lib.mkOption {
       type = lib.types.listOf lib.types.attrs;
@@ -353,6 +298,7 @@ in
 
   config = {
     programs.niri.enable = true;
+    xdg.portal.xdgOpenUsePortal = true;
     hjem.users.matilde.xdg.config.files."niri/config.kdl".source = builtConfig;
   };
 }

@@ -1,63 +1,80 @@
-{ pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
-  services.displayManager.ly.enable = true;
-  services.gnome.gnome-keyring.enable = true;
-  services.udisks2.enable = true;
-  services.tailscale.enable = true;
-  services.resolved.enable = true;
-  services.usbmuxd.enable = true;
-  security.pam.services.login.enableGnomeKeyring = true;
-  security.polkit.enable = true;
-
-  services.mullvad-vpn = {
-    enable = true;
-    gui.enable = true;
+  # Long-running user services tied to the graphical session. niri.service
+  # binds graphical-session.target, so these start and stop with niri.
+  options.local.sessionServices = lib.mkOption {
+    type = lib.types.attrsOf (
+      lib.types.submodule {
+        options = {
+          description = lib.mkOption { type = lib.types.str; };
+          command = lib.mkOption {
+            type = lib.types.str;
+            description = "ExecStart command line.";
+          };
+        };
+      }
+    );
+    default = { };
+    description = "User services started with, and stopped alongside, the graphical session.";
   };
 
-  services.pipewire = {
-    enable = true;
-    pulse.enable = true;
-    jack.enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    wireplumber.enable = true;
-  };
+  config = {
+    services.displayManager.ly.enable = true;
+    services.gnome.gnome-keyring.enable = true;
+    services.udisks2.enable = true;
+    services.tailscale.enable = true;
+    services.resolved.enable = true;
+    services.usbmuxd.enable = true;
+    services.btrfs.autoScrub.enable = true;
 
-  systemd.user.services.polkit-kde-authentication-agent-1 = {
-    description = "polkit-kde-authentication-agent-1";
-    wantedBy = [ "niri.service" ];
-    after = [ "niri.service" ];
-    serviceConfig = {
-      Type = "simple";
-      ExecStart = "${pkgs.kdePackages.polkit-kde-agent-1}/libexec/polkit-kde-authentication-agent-1";
-      Restart = "on-failure";
-      RestartSec = 1;
-      TimeoutStopSec = 10;
+    services.mullvad-vpn = {
+      enable = true;
+      gui.enable = true;
     };
-  };
 
-  systemd.user.services.udiskie = {
-    description = "Automount removable media";
-    wantedBy = [ "graphical-session.target" ];
-    partOf = [ "graphical-session.target" ];
-    serviceConfig = {
-      ExecStart = "${pkgs.udiskie}/bin/udiskie --automount --no-file-manager";
-      Restart = "on-failure";
-      RestartSec = 3;
+    services.pipewire = {
+      enable = true;
+      pulse.enable = true;
+      jack.enable = true;
+      alsa.enable = true;
+      alsa.support32Bit = true;
     };
-  };
 
-  systemd.user.services.ironbar = {
-    description = "ironbar";
-    wantedBy = [ "niri.service" ];
-    after = [ "niri.service" ];
-    serviceConfig = {
-      Type = "simple";
-      ExecStart = "${pkgs.ironbar}/bin/ironbar";
-      Restart = "on-failure";
-      RestartSec = 1;
-      TimeoutStopSec = 10;
+    local.sessionServices = {
+      polkit-kde-authentication-agent-1 = {
+        description = "KDE polkit authentication agent";
+        command = "${pkgs.kdePackages.polkit-kde-agent-1}/libexec/polkit-kde-authentication-agent-1";
+      };
+      udiskie = {
+        description = "Automount removable media";
+        command = "${lib.getExe pkgs.udiskie} --automount --no-file-manager";
+      };
+      ironbar = {
+        description = "ironbar";
+        command = lib.getExe pkgs.ironbar;
+      };
     };
+
+    systemd.user.services = lib.mapAttrs (_: svc: {
+      inherit (svc) description;
+      wantedBy = [ "graphical-session.target" ];
+      partOf = [ "graphical-session.target" ];
+      # Not After=graphical-session.target: the target is implicitly ordered
+      # after what it wants, so that would be a cycle. niri.service is
+      # Type=notify and Before= the target, so this waits for a ready session.
+      after = [ "niri.service" ];
+      serviceConfig = {
+        ExecStart = svc.command;
+        Restart = "on-failure";
+        RestartSec = 1;
+        TimeoutStopSec = 10;
+      };
+    }) config.local.sessionServices;
   };
 }
