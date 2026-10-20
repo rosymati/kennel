@@ -2,17 +2,8 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    # Garbage needed for other inputs
-    flake-compat.url = "github:NixOS/flake-compat";
+    # Shared by llm-agents (treefmt-nix is needed eagerly by its bun2nix input)
     flake-parts.url = "github:hercules-ci/flake-parts";
-    home-manager = {
-      url = "github:nix-community/home-manager/release-26.05";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    nix-darwin = {
-      url = "github:nix-darwin/nix-darwin/nix-darwin-26.05";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -21,14 +12,18 @@
     chaotic = {
       url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "";
+      inputs.flake-schemas.follows = "";
     };
 
     nixcord = {
       url = "github:FlameFlag/nixcord";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.treefmt-nix.follows = "treefmt-nix";
-      inputs.home-manager.follows = "home-manager";
-      inputs.nix-darwin.follows = "nix-darwin";
+      inputs.nixpkgs-packages.follows = "nixpkgs";
+      inputs.nixpkgs-ci.follows = "nixpkgs";
+      inputs.treefmt-nix.follows = "";
+      inputs.home-manager.follows = "";
+      inputs.nix-darwin.follows = "";
     };
 
     zen-browser = {
@@ -67,11 +62,6 @@
       url = "github:NixOS/nixos-hardware/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    obsbot-camera-control = {
-      url = "git+file:///home/matilde/projects/obsbot-camera-control";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs =
@@ -86,7 +76,28 @@
           helix.overlays.default
           weston-demos.overlays.default
 
-          (final: prev: llm-agents.packages.${prev.stdenv.hostPlatform.system} or { })
+          (final: prev: {
+            inherit (llm-agents.packages.${prev.stdenv.hostPlatform.system})
+              claude-code
+              codex
+              opencode
+              pi
+              ;
+          })
+
+          (final: prev: {
+            # TODO: drop once helix bumps tree-sitter-perl past 72a08a4; glibc 2.44
+            # makes bsearch a C23 _Generic macro, clashing with the grammar's own bsearch.
+            helix = prev.helix.override {
+              grammarOverlays = [
+                (_: grammars: {
+                  perl = grammars.perl.overrideAttrs (old: {
+                    FLAGS = old.FLAGS ++ [ "-std=gnu17" ];
+                  });
+                })
+              ];
+            };
+          })
 
           (final: prev: {
             # TODO: drop the override once zen-browser-flake bumps past 1.23.3b;
@@ -132,8 +143,6 @@
       );
     in
     {
-      devShells = import ./modules/devshell.nix { inherit nixpkgs; };
-
       nixosConfigurations = nixpkgs.lib.genAttrs hosts mkHost;
     };
 }

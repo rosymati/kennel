@@ -28,6 +28,8 @@
     })
     neovim
     fuzzel
+    swaylock
+    playerctl
     xwayland-satellite
     signal-desktop
     hyfetch
@@ -69,7 +71,6 @@
     deno
     b3sum
     telegram-desktop
-    # poetry
     dbeaver-bin
     postgresql
     yt-dlp
@@ -83,7 +84,7 @@
     screen
     pandoc
     inkscape
-    # helix
+    helix
     awww
     eigenwallet
     veracrypt
@@ -113,7 +114,6 @@
     olympus
     keymapp
     chromium
-    # genymotion
     (pkgs.symlinkJoin {
       name = "sweethome3d";
       paths = [ pkgs.sweethome3d.application ];
