@@ -46,17 +46,6 @@ let
       }
     '';
   };
-
-  rotate = pkgs.writeShellApplication {
-    name = "awww-rotate";
-    runtimeInputs = [ next ];
-    text = ''
-      while true; do
-        awww-next || true
-        sleep ${cfg.interval}
-      done
-    '';
-  };
 in
 {
   options.local.awww = {
@@ -68,7 +57,7 @@ in
     interval = lib.mkOption {
       type = lib.types.str;
       default = "5m";
-      description = "Time between wallpaper changes, in sleep(1) duration syntax.";
+      description = "Time between wallpaper changes, as a systemd time span (e.g. 5m, 1h).";
     };
     order = lib.mkOption {
       type = lib.types.enum [
@@ -83,7 +72,7 @@ in
       default = 7;
       description = ''
         awww transition step (1-255) for wallpaper changes. Higher is faster;
-        awww's own default is 2. Passed as --transition-step.
+        awww's own default is 2. Passed via AWWW_TRANSITION_STEP.
       '';
     };
   };
@@ -92,30 +81,34 @@ in
     # `awww-next` available as a manual trigger (command / keybind).
     environment.systemPackages = [ next ];
 
-    systemd.user.services.awww-daemon = {
+    local.sessionServices.awww-daemon = {
       description = "awww wallpaper daemon";
-      wantedBy = [ "niri.service" ];
-      after = [ "niri.service" ];
-      serviceConfig = {
-        Type = "simple";
-        ExecStart = "${pkgs.awww}/bin/awww-daemon";
-        Restart = "on-failure";
-        RestartSec = 1;
-        TimeoutStopSec = 10;
-      };
+      command = "${pkgs.awww}/bin/awww-daemon";
     };
 
+    # One wallpaper change per run; the timer fires once at session start and
+    # then every `interval`.
     systemd.user.services.awww-rotate = {
       description = "awww wallpaper rotation";
-      wantedBy = [ "niri.service" ];
+      partOf = [ "graphical-session.target" ];
       after = [ "awww-daemon.service" ];
       requires = [ "awww-daemon.service" ];
       serviceConfig = {
-        Type = "simple";
-        ExecStart = lib.getExe rotate;
-        Restart = "on-failure";
-        RestartSec = 1;
-        TimeoutStopSec = 10;
+        Type = "oneshot";
+        ExecStart = lib.getExe next;
+        # awww-next waits for the daemon socket; don't let that hang forever.
+        TimeoutStartSec = 30;
+      };
+    };
+
+    systemd.user.timers.awww-rotate = {
+      description = "awww wallpaper rotation";
+      wantedBy = [ "graphical-session.target" ];
+      partOf = [ "graphical-session.target" ];
+      timerConfig = {
+        OnActiveSec = 0;
+        OnUnitActiveSec = cfg.interval;
+        AccuracySec = "1s";
       };
     };
   };
