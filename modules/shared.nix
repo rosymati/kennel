@@ -55,8 +55,11 @@
   };
 
   programs = {
-    foot.enable = true;
-    vscode.enable = true;
+    foot = {
+      enable = true;
+      enableZshIntegration = true;
+    };
+
     nix-ld.enable = true;
     gamemode.enable = true;
 
@@ -67,6 +70,7 @@
 
     direnv = {
       enable = true;
+      enableZshIntegration = true;
       nix-direnv.enable = true;
     };
 
