@@ -89,7 +89,17 @@
           (final: prev: llm-agents.packages.${prev.stdenv.hostPlatform.system} or { })
 
           (final: prev: {
-            zen-browser = zen-browser.packages.${prev.stdenv.hostPlatform.system}.default;
+            # TODO: drop the override once zen-browser-flake bumps past 1.23.3b;
+            # upstream re-uploaded the release tarball, invalidating the pinned hash.
+            zen-browser =
+              let
+                zen = zen-browser.packages.${prev.stdenv.hostPlatform.system};
+              in
+              zen.zen-browser.override {
+                zen-browser-unwrapped = zen.zen-browser-unwrapped.override {
+                  hash = "sha256-uyBF0+IWVNQP6EElAJLurf0sH8gx7vtQkiJ3PIvcoUk=";
+                };
+              };
           })
         ];
       };
