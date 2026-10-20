@@ -17,9 +17,7 @@
   time.timeZone = "Europe/Rome";
 
   i18n.defaultLocale = "en_US.UTF-8";
-  console = {
-    keyMap = "it";
-  };
+  console.keyMap = "it";
 
   users.users.matilde = {
     isNormalUser = true;
@@ -92,12 +90,20 @@
           "git"
         ];
       };
-
     };
 
     zoxide = {
       enable = true;
       enableZshIntegration = true;
+    };
+
+    nh = {
+      enable = true;
+      clean = {
+        enable = true;
+        extraArgs = "--keep 5 --keep-since 7d";
+      };
+      flake = "/home/matilde/projects/kennel";
     };
 
     obs-studio = {
@@ -153,33 +159,28 @@
       };
   };
 
-  fonts.packages =
-    with pkgs;
-    [
-      noto-fonts
-      noto-fonts-color-emoji
-      noto-fonts-cjk-sans
-      noto-fonts-cjk-serif
-      liberation_ttf
-    ]
-    ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
+  fonts.packages = with pkgs; [
+    noto-fonts
+    noto-fonts-color-emoji
+    noto-fonts-cjk-sans
+    noto-fonts-cjk-serif
+    liberation_ttf
+    nerd-fonts.symbols-only
+    nerd-fonts.jetbrains-mono
+  ];
 
-  virtualisation.docker = {
+  virtualisation.docker.rootless = {
     enable = true;
-
-    rootless = {
-      enable = true;
-      setSocketVariable = true;
-    };
-
-    storageDriver = "btrfs";
+    setSocketVariable = true;
   };
 
   environment = {
     localBinInPath = true;
-    etc."xdg/autostart/foot-server.desktop" = lib.mkOverride 0 { enable = false; };
     sessionVariables.NIXOS_OZONE_WL = "1";
   };
+
+  nix.channel.enable = false;
+  nix.optimise.automatic = true;
 
   nix.settings = {
     experimental-features = [
@@ -190,14 +191,10 @@
     extra-substituters = [
       "https://helix.cachix.org"
       "https://cache.numtide.com" # llm-agents
-      "https://niri-nix.cachix.org"
-      "https://jakestanger.cachix.org"
     ];
     extra-trusted-public-keys = [
       "helix.cachix.org-1:ejp9KQpR1FBI2onstMQ34yogDm4OgU2ru6lIwPvuCVs="
       "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=" # llm-agents
-      "niri-nix.cachix.org-1:SvFtqpDcf7Sm1SMJdby1/+Y+6f3Yt3/3PMcSTKPJNJ0="
-      "jakestanger.cachix.org-1:VWJE7AWNe5/KOEvCQRxoE8UsI2Xs2nHULJ7TEjYm7mM="
     ];
   };
 }
