@@ -169,6 +169,11 @@
     nerd-fonts.jetbrains-mono
   ];
 
+  security.pki.caCertificateBlacklist = [
+    "Comodo AAA Services root"
+    "emSign ECC Root CA - G3"
+  ];
+
   virtualisation.docker.rootless = {
     enable = true;
     setSocketVariable = true;
